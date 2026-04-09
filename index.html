@@ -24,7 +24,7 @@
   <meta charset="utf-8">
   <meta name="description"
         content="Distributed 3D Leader-Follower Formation Control with Field-of-View Safety via Control Barrier Functions.">
-  <meta name="keywords" content="UAV, Formation Control, Control Barrier Functions, Perception-Aware, 3D-LFF">
+  <meta name="keywords" content="Multi-UAV systems, distributed control, 3D leader--follower formation, field-of-view constraints, control barrier functions">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Distributed 3D Leader-Follower Formation Control with Field-of-View Safety via Control Barrier Functions</title>
 
@@ -161,9 +161,9 @@
           <iframe src="https://www.youtube.com/embed/MrKrnHhk8IA?rel=0&amp;showinfo=0"
                   frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
         </div>
-        <!-- <h2 class="subtitle has-text-centered">
-        A novel safety filter that encodes camera frustum constraints (FOV and depth) to ensure continuous visual relative localization in 3D UAV formations.
-        </h2> -->
+        <h2 class="subtitle has-text-centered">
+          ...
+        </h2>
       </div>
     </div>
     <!--/ Paper video. -->
@@ -197,24 +197,14 @@
   <div class="container is-max-desktop">
     <div class="columns is-centered">
       <div class="column is-full-width">
-        <h2 class="title is-3">System Framework & Problem Formulation</h2>
+        <h2 class="title is-3">System Framework</h2>
         <div class="content has-text-justified">
-          <p>
-            We define the 3D leader-follower formation (3D-LFF) state in an augmented spherical coordinate representation: \( \mathbf{x}_{ij} = [L_{ij}, \phi_{ij}, \xi_{ij}, \alpha_{ij}]^\top \).
-          </p>
           <div class="has-text-centered" style="margin-top: 20px; margin-bottom: 20px;">
             <img src="./static/images/diagram.png" alt="Leader-follower geometry and camera frustum" style="max-width: 50%;">
           </div>
           <p>
-            The perception safe set \( \mathcal{S}^q \) is defined by the camera frustum inequalities, ensuring the leader remains within horizontal (\( \Phi \)) and vertical (\( \Theta \)) FOV angles, as well as depth limits (\( x_{near}, x_{far} \)).
+            relies only on local relative-state information to achieve 3D leader-follower formation tracking while explicitly enforcing camera-frustum visibility constraints.
           </p>
-          <p>
-            <strong>Problem Formulation:</strong> This captures a fundamental trade-off. The control objective is to design a control law for the follower such that:
-          </p>
-          <ul>
-            <li>The formation error \( \mathbf{e}^\mathbf{x}_{ij} \) exponentially converges to \( \mathbf{0} \) when safety constraints are inactive.</li>
-            <li>The leader remains strictly within the follower's camera frustum for all \( t \ge 0 \).</li>
-          </ul>
         </div>
       </div>
     </div>
@@ -232,7 +222,7 @@
             <img src="./static/images/architecture4.png" alt="Perception-Aware Safe LFF Control Architecture" style="max-width: 100%;">
           </div>
           <p>
-            We propose a novel relative 3D kinematic formulation in spherical coordinates that captures the camera-to-leader geometry (including relative heading) and yields a distributed formation controller based solely on local relative states. We pair this controller with areal-time CBF-QP safety filter that enforces the follower camera frustum-FOV and depth limits-by minimally modifying the nominal formation commands, thereby guaranteeing continuous visibility while preserving tracking whenever feasible.  
+            We propose a novel relative 3D kinematic formulation in spherical coordinates that captures the camera-to-leader geometry (including relative heading) and yields a distributed 3D-LFF nominal controller based solely on local relative states. We pair this controller with areal-time CBF-QP perception-aware safety filter that enforces the follower camera frustum-FOV and depth limits-by minimally modifying the nominal formation commands, thereby guaranteeing continuous visibility while preserving tracking whenever feasible.  
           </p>
         </div>
       </div>
