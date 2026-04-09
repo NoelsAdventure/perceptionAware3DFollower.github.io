@@ -161,9 +161,9 @@
           <iframe src="https://www.youtube.com/embed/MrKrnHhk8IA?rel=0&amp;showinfo=0"
                   frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
         </div>
-        <h2 class="subtitle has-text-centered">
+        <!-- <h2 class="subtitle has-text-centered">
         A novel safety filter that encodes camera frustum constraints (FOV and depth) to ensure continuous visual relative localization in 3D UAV formations.
-        </h2>
+        </h2> -->
       </div>
     </div>
     <!--/ Paper video. -->
@@ -178,7 +178,13 @@
         <h2 class="title is-3">Abstract</h2>
         <div class="content has-text-justified">
           <p>
-            This letter proposes a distributed 3D leader-follower formation~(3D-LFF) control framework for multi-UAV systems that achieves formation tracking while enforcing perception safety constraints. Maintaining safe, vision-based 3D-LFF is challenging because onboard cameras impose strict Field-of-View (FOV) limitations, and aggressive maneuvers or demanding formation commands can drive the leader outside the follower’s camera frustum, resulting in loss of visibility. To address this issue, we develop a perception-aware safe control architecture that guarantees visibility by construction. First, we derive a relative kinematic model in a line-of-sight coordinate representation and design a distributed 3D-LFF tracking controller using only locally available relative states. Next, we embed the nominal formation controller within a Control Barrier Function-based Quadratic Program (CBF-QP) safety filter that minimally modifies the commanded setpoints to maintain the leader inside the follower’s camera frustum while preserving formation tracking whenever feasible. Gazebo simulations and Crazyflie hardware experiments validate the proposed approach, demonstrating accurate formation tracking and effective FOV enforcement, including scenarios in which the nominal desired formation conflicts with visibility constraints. 
+            This letter proposes a distributed 3D leader-follower formation~(3D-LFF) control framework for multi-UAV systems that achieves formation tracking while enforcing perception safety constraints. Maintaining safe, vision-based 3D-LFF is challenging because onboard cameras impose strict Field-of-View (FOV) limitations, and aggressive maneuvers or demanding formation commands can drive the leader outside the follower's camera frustum, resulting in loss of visibility.  
+          </p>
+          <p>
+            To address this issue, we develop a perception-aware safe control architecture that guarantees visibility by construction. First, we derive a relative kinematic model in a line-of-sight coordinate representation and design a distributed 3D-LFF tracking controller using only locally available relative states. Next, we embed the nominal formation controller within a Control Barrier Function-based Quadratic Program (CBF-QP) safety filter that minimally modifies the commanded setpoints to maintain the leader inside the follower’s camera frustum while preserving formation tracking whenever feasible. 
+          </p>
+          <p>
+            Gazebo simulations and <a href="https://www.bitcraze.io/products/crazyflie-2-1-brushless/" target="_blank" rel="noopener noreferrer">Crazyflie</a> hardware experiments validate the proposed approach, demonstrating accurate formation tracking and effective FOV enforcement, including scenarios in which the nominal desired formation conflicts with visibility constraints.
           </p>
         </div>
       </div>
@@ -220,16 +226,13 @@
   <div class="container is-max-desktop">
     <div class="columns is-centered">
       <div class="column is-full-width">
-        <h2 class="title is-3">Methodology</h2>
+        <h2 class="title is-3">Perception-Aware Safe 3D Leader-Follower Formation Control</h2>
         <div class="content has-text-justified">
-          <p>
-            To resolve the conflicting objectives between tracking and visibility in real-time, we couple a nominal 3D-LFF controller with a CBF-QP safety filter. 
-          </p>
           <div class="has-text-centered" style="margin-top: 20px; margin-bottom: 20px;">
             <img src="./static/images/architecture4.png" alt="Perception-Aware Safe LFF Control Architecture" style="max-width: 100%;">
           </div>
           <p>
-            The desired formation is tracked by the distributed nominal controller based on the 3D-LFF kinematics using state-feedback linearization to produce the nominal velocity command \( \mathbf{u}_i^{nom} \). To guarantee perception safety, this nominal command is passed through a CBF-QP safety filter. The filter solves a quadratic program to produce a minimally modified safe command \( \mathbf{u}_i^{safe} \), actively enforcing the frustum constraints only when visibility is at risk.
+            We propose a novel relative 3D kinematic formulation in spherical coordinates that captures the camera-to-leader geometry (including relative heading) and yields a distributed formation controller based solely on local relative states. We pair this controller with areal-time CBF-QP safety filter that enforces the follower camera frustum-FOV and depth limits-by minimally modifying the nominal formation commands, thereby guaranteeing continuous visibility while preserving tracking whenever feasible.  
           </p>
         </div>
       </div>
