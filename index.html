@@ -233,8 +233,13 @@
     <hr>
     <h3 class="title is-4">Gazebo Simulation</h3>
     
+    <div class="column is-half">
+      <img src="./static/images/scenario.png" alt="Top view of the experiment trajectory" />
+      <p class="has-text-centered is-size-7 mt-2">1leader-2follower navigation scenario in a Gazebo cave environment.</p>
+    </div>
+
     <p class="content">
-      <strong>Scenario Setup:</strong> The drones navigate a confined cave environment. Open chambers encourage formation expansion (introducing visibility conflicts), while tight corridors force sudden braking maneuvers. 
+      Using the <a href="https://www.bitcraze.io/2024/04/crazysim-a-software-in-the-loop-simulator-for-the-crazyflie/" target="_blank" rel="noopener noreferrer">CrazySim</a> framework, the drones navigate a confined cave environment. Open chambers encourage formation expansion (introducing visibility conflicts), while tight corridors force sudden braking maneuvers. 
     </p>
 
     <div class="columns is-centered mt-4">
@@ -246,32 +251,26 @@
       </div>
       <div class="column is-half">
         <video autoplay controls muted loop playsinline width="100%">
-          <source src="./static/videos/Experiment-compressed-low.mp4" type="video/mp4">
+          <source src="./static/videos/SimulationAggresive-compressed-low.mp4" type="video/mp4">
         </video>
         <p class="has-text-centered is-size-7 mt-2">Abrupt Leader Motion</p>
       </div>
     </div>
 
     <p class="content mt-4">
-      <strong>Simulation Results:</strong> In the three-stage task, expanding the formation pushes the leader toward the edge of the camera view. Our CBF filter safely intervenes, minimally adjusting the controls to keep the leader strictly visible, whereas the baseline (NoCBF) loses sight of the leader entirely. Similarly, when the leader brakes abruptly, our safety filter prevents dangerous overshoot and maintains the line-of-sight.
+      In the three-stage task, expanding the formation pushes the leader toward the edge of the camera view. Our CBF filter safely intervenes, minimally adjusting the controls to keep the leader strictly visible, whereas the baseline (NoCBF) loses sight of the leader entirely. Similarly, when the leader brakes abruptly, our safety filter prevents dangerous overshoot and maintains the line-of-sight.
     </p>
 
     <hr>
     <h3 class="title is-4">Crazyflie Experiment</h3>
 
-    <div class="columns is-centered mt-4">
-      <div class="column is-half">
-        <img src="./static/images/exp_top.png" alt="Top view of the experiment trajectory" />
-        <p class="has-text-centered is-size-7 mt-2">Top View</p>
-      </div>
-      <div class="column is-half">
-        <img src="./static/images/exp_traj.png" alt="3D perspective of the experiment trajectories" />
-        <p class="has-text-centered is-size-7 mt-2">3D Trajectory</p>
-      </div>
+    <div class="column is-half">
+      <img src="./static/images/exp_top.png" alt="Top view of the experiment trajectory" />
+      <p class="has-text-centered is-size-7 mt-2">Top view trajectories of the leader and the followers.</p>
     </div>
 
     <p class="content mt-4">
-      <strong>Hardware Setup:</strong> Real-world flight validation uses Crazyflie 2.1 quadrotors. To rigorously stress-test the method against unmodeled aerodynamics and latency, the leader tracks a highly dynamic figure-eight (lemniscate) trajectory. A motion-capture system is used to emulate ideal relative sensing, allowing us to isolate the performance of the control and safety layers.
+      Real-world flight validation uses Crazyflie 2.1 quadrotors. To rigorously stress-test the method against unmodeled aerodynamics and latency, the leader tracks a highly dynamic figure-eight (lemniscate) trajectory. A motion-capture system is used to emulate ideal relative sensing, allowing us to isolate the performance of the control and safety layers.
     </p>
 
     <div class="columns is-centered is-vcentered mt-4">
@@ -282,13 +281,13 @@
         <p class="has-text-centered is-size-7 mt-2">Hardware Flight Video</p>
       </div>
       <div class="column is-half">
-        <img src="./static/images/exp_conflict.png" alt="Hardware Experiment Quantitative Results" />
-        <p class="has-text-centered is-size-7 mt-2">Quantitative Results: Three-Stage Task</p>
+        <img src="./static/images/exp_shorten.png" alt="Hardware Experiment Quantitative Results" />
+        <p class="has-text-centered is-size-7 mt-2">Quantitative Results</p>
       </div>
     </div>
 
     <p class="content mt-4">
-      <strong>Experiment Results:</strong> Even under aggressive real-world maneuvers, the CBF-equipped follower successfully modifies its nominal velocity commands when formation demands conflict with camera constraints. It maintains strict visibility of the leader at all times. In contrast, the baseline controller violates the safety constraints, proving the necessity of the proposed filter for real-world deployments.
+      Even under aggressive real-world maneuvers, the CBF-equipped follower successfully modifies its nominal velocity commands when formation demands conflict with camera constraints. It maintains strict visibility of the leader at all times. In contrast, the baseline controller violates the safety constraints, proving the necessity of the proposed filter for real-world deployments.
     </p>
 
   </div>
@@ -343,7 +342,6 @@
   </div>
 </section>
 
-<!-- Replace the old slider links with these -->
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma-carousel@4.0.3/dist/css/bulma-carousel.min.css">
 <script src="https://cdn.jsdelivr.net/npm/bulma-carousel@4.0.3/dist/js/bulma-carousel.min.js"></script>
 
@@ -354,8 +352,6 @@
       
       <div class="column is-half">
         <h3 class="title is-4">Gazebo Simulation</h3>
-        
-        <!-- Add a wrapper to contain the width -->
         <div class="carousel-container">
           <div id="gazebo-carousel" class="carousel">
             <div class="item">
