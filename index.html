@@ -159,7 +159,6 @@
         </div>
       </div>
     </div>
-    <!--/ Paper video. -->
   </div>
 </section>
 
@@ -190,7 +189,7 @@
   <div class="container is-max-desktop">
     <div class="columns is-centered">
       <div class="column is-full-width">
-        <h2 class="title is-3">System Framework</h2>
+        <h2 class="title is-3">Introduction</h2>
         <div class="content has-text-justified">
           <div class="has-text-centered" style="margin-top: 20px; margin-bottom: 20px;">
             <img src="./static/images/diagram.png" alt="Leader-follower geometry and camera frustum" style="max-width: 50%;">
@@ -223,9 +222,82 @@
   </div>
 </section>
 
+
+<section class="section" id="experiments">
+  <div class="container is-max-desktop">
+    <h2 class="title is-3">Experiments</h2>
+    <p class="content">
+      We evaluate our perception-aware 3D leader-follower controller in a Gazebo simulation and on physical Crazyflie 2.1 drones. We compare our Control Barrier Function (CBF) safety filter against a standard baseline without it (NoCBF).
+    </p>
+
+    <hr>
+    <h3 class="title is-4">Gazebo Simulation</h3>
+    
+    <p class="content">
+      <strong>Scenario Setup:</strong> The drones navigate a confined cave environment. Open chambers encourage formation expansion (introducing visibility conflicts), while tight corridors force sudden braking maneuvers. 
+    </p>
+
+    <div class="columns is-centered mt-4">
+      <div class="column is-half">
+        <video autoplay controls muted loop playsinline width="100%">
+          <source src="./static/videos/Simulation-compressed-low.mp4" type="video/mp4">
+        </video>
+        <p class="has-text-centered is-size-7 mt-2">Three-Stage Task</p>
+      </div>
+      <div class="column is-half">
+        <video autoplay controls muted loop playsinline width="100%">
+          <source src="./static/videos/Experiment-compressed-low.mp4" type="video/mp4">
+        </video>
+        <p class="has-text-centered is-size-7 mt-2">Abrupt Leader Motion</p>
+      </div>
+    </div>
+
+    <p class="content mt-4">
+      <strong>Simulation Results:</strong> In the three-stage task, expanding the formation pushes the leader toward the edge of the camera view. Our CBF filter safely intervenes, minimally adjusting the controls to keep the leader strictly visible, whereas the baseline (NoCBF) loses sight of the leader entirely. Similarly, when the leader brakes abruptly, our safety filter prevents dangerous overshoot and maintains the line-of-sight.
+    </p>
+
+    <hr>
+    <h3 class="title is-4">Crazyflie Experiment</h3>
+
+    <div class="columns is-centered mt-4">
+      <div class="column is-half">
+        <img src="./static/images/exp_top.png" alt="Top view of the experiment trajectory" />
+        <p class="has-text-centered is-size-7 mt-2">Top View</p>
+      </div>
+      <div class="column is-half">
+        <img src="./static/images/exp_traj.png" alt="3D perspective of the experiment trajectories" />
+        <p class="has-text-centered is-size-7 mt-2">3D Trajectory</p>
+      </div>
+    </div>
+
+    <p class="content mt-4">
+      <strong>Hardware Setup:</strong> Real-world flight validation uses Crazyflie 2.1 quadrotors. To rigorously stress-test the method against unmodeled aerodynamics and latency, the leader tracks a highly dynamic figure-eight (lemniscate) trajectory. A motion-capture system is used to emulate ideal relative sensing, allowing us to isolate the performance of the control and safety layers.
+    </p>
+
+    <div class="columns is-centered is-vcentered mt-4">
+      <div class="column is-half">
+        <video autoplay controls muted loop playsinline width="100%">
+          <source src="./static/videos/Experiment-compressed-low.mp4" type="video/mp4">
+        </video>
+        <p class="has-text-centered is-size-7 mt-2">Hardware Flight Video</p>
+      </div>
+      <div class="column is-half">
+        <img src="./static/images/exp_conflict.png" alt="Hardware Experiment Quantitative Results" />
+        <p class="has-text-centered is-size-7 mt-2">Quantitative Results: Three-Stage Task</p>
+      </div>
+    </div>
+
+    <p class="content mt-4">
+      <strong>Experiment Results:</strong> Even under aggressive real-world maneuvers, the CBF-equipped follower successfully modifies its nominal velocity commands when formation demands conflict with camera constraints. It maintains strict visibility of the leader at all times. In contrast, the baseline controller violates the safety constraints, proving the necessity of the proposed filter for real-world deployments.
+    </p>
+
+  </div>
+</section>
+
+<!-- 
 <section class="section">
   <div class="container is-max-desktop">
-    <h2 class="title is-3">Experimental Videos</h2>
+    <h2 class="title is-3">Experiments </h2>
     <div class="columns is-centered">
       
       <div class="column">
@@ -314,7 +386,7 @@
       <strong>Comparison:</strong> The CBF-equipped follower (blue) maintains states within safe bounds compared to the unconstrained (NoCBF) baseline.
     </p>
   </div>
-</section>
+</section> -->
 
 <section class="section" id="BibTeX">
   <div class="container is-max-desktop content">
