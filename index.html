@@ -95,7 +95,7 @@
           <div class="is-size-5 publication-authors">
             <span class="author-block"><a href="https://noelsadventure.my.id">Immanuel R.  Santjoko</a><sup>1†</sup>,</span>
             <span class="author-block"><a href="https://www.linkedin.com/in/richie-ryulie-585609237/">Richie R. Suganda</a><sup>1†</sup>,</span>
-            <span class="author-block"><a href="https://https://binhu85.github.io/">Bin Hu</a><sup>1,2</sup></span>
+            <span class="author-block"><a href="https://binhu85.github.io/">Bin Hu</a><sup>1,2</sup></span>
           </div>
 
           <div class="is-size-5 publication-authors">
@@ -109,7 +109,7 @@
             <div class="publication-links">
               <!-- PDF Link. -->
               <span class="link-block">
-                <a href="https://arxiv.org/pdf/2011.12948"
+                <a href="#"
                    class="external-link button is-normal is-rounded is-dark">
                   <span class="icon">
                       <i class="fas fa-file-pdf"></i>
@@ -117,8 +117,9 @@
                   <span>Paper</span>
                 </a>
               </span>
+              <!-- arXiv Link. -->
               <span class="link-block">
-                <a href="https://arxiv.org/abs/2011.12948"
+                <a href="#"
                    class="external-link button is-normal is-rounded is-dark">
                   <span class="icon">
                       <i class="ai ai-arxiv"></i>
@@ -126,17 +127,15 @@
                   <span>arXiv</span>
                 </a>
               </span>
-                </a>
-              </span>
               <!-- Code Link. -->
               <span class="link-block">
-                <a href="https://github.com/google/nerfies"
+                <a href="#"
                    class="external-link button is-normal is-rounded is-dark">
                   <span class="icon">
                       <i class="fab fa-github"></i>
                   </span>
                   <span>Code</span>
-                  </a>
+                </a>
               </span>
             </div>
         </div>
@@ -152,11 +151,11 @@
     <div class="columns is-centered has-text-centered">
       <div class="column is-four-fifths">
         <div class="publication-video">
-          <iframe src="https://www.youtube.com/embed/MrKrnHhk8IA?rel=0&amp;showinfo=0"
+          <iframe src="https://www.youtube.com/embed/cK3tFkGduiA?rel=0&amp;showinfo=0"
                   frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
         </div>
         <h2 class="subtitle has-text-centered">
-          A distributed perception-aware framework for 3D leader--follower formation with explicit camera-frustum safety
+          Keeping the leader inside the follower's camera view, even when the formation says otherwise.
         </h2>
       </div>
     </div>
@@ -172,13 +171,13 @@
         <h2 class="title is-3">Abstract</h2>
         <div class="content has-text-justified">
           <p>
-            This letter proposes a distributed 3D leader-follower formation~(3D-LFF) control framework for multi-UAV systems that achieves formation tracking while enforcing perception safety constraints. Maintaining safe, vision-based 3D-LFF is challenging because onboard cameras impose strict Field-of-View (FOV) limitations, and aggressive maneuvers or demanding formation commands can drive the leader outside the follower's camera frustum, resulting in loss of visibility.  
+            We present a way for a group of drones to fly in a 3D leader-follower formation while making sure the follower's camera always sees the leader. This matters in places without GPS, where the follower has to rely on its onboard camera to figure out where the leader is. The hard part is that the camera only sees a narrow region in front of it, and a sharp turn or a wide formation command can easily push the leader out of view.
           </p>
           <p>
-            To address this issue, we develop a perception-aware safe control architecture that guarantees visibility by construction. First, we derive a relative kinematic model in a line-of-sight coordinate representation and design a distributed 3D-LFF tracking controller using only locally available relative states. Next, we embed the nominal formation controller within a Control Barrier Function-based Quadratic Program (CBF-QP) safety filter that minimally modifies the commanded setpoints to maintain the leader inside the follower’s camera frustum while preserving formation tracking whenever feasible. 
+            Our approach has two pieces. First, a <strong>formation controller</strong> tells the follower how to move based only on what it can sense locally about the leader. Second, a <strong>safety filter</strong> sits on top of that controller and slightly adjusts the commanded velocities whenever they would push the leader outside the camera's view. The filter steps in only when needed, so normal flight stays unaffected.
           </p>
           <p>
-            Gazebo simulations and <a href="https://www.bitcraze.io/products/crazyflie-2-1-brushless/" target="_blank" rel="noopener noreferrer">Crazyflie</a> hardware experiments validate the proposed approach, demonstrating accurate formation tracking and effective FOV enforcement, including scenarios in which the nominal desired formation conflicts with visibility constraints.
+            We tested this in Gazebo simulations and on real <a href="https://www.bitcraze.io/products/crazyflie-2-1-brushless/" target="_blank" rel="noopener noreferrer">Crazyflie</a> drones. In both cases, the follower keeps the leader inside its camera view at all times — even during aggressive maneuvers and even when the desired formation directly conflicts with what the camera can see.
           </p>
         </div>
       </div>
@@ -186,18 +185,22 @@
   </div>
 </section>
 
-<!-- System Framework & Problem Formulation -->
+<!-- The Problem -->
 <section class="section">
   <div class="container is-max-desktop">
     <div class="columns is-centered">
       <div class="column is-full-width">
-        <h2 class="title is-3">Introduction</h2>
+        <h2 class="title is-3">The Problem</h2>
         <div class="content has-text-justified">
           <div class="has-text-centered" style="margin-top: 20px; margin-bottom: 20px;">
-            <img src="./static/images/diagram.png" alt="Leader-follower geometry and camera frustum" style="max-width: 50%;">
+            <img src="./static/images/diagram.png" alt="Leader-follower geometry and camera frustum" style="max-width: 60%;">
+            <p class="is-size-7 mt-2"><em>The follower tracks the leader using its onboard camera. The pink region shows what the camera can actually see — a cone limited by the camera's viewing angles and depth range.</em></p>
           </div>
           <p>
-            In GPS-denied environments, formation performance depends critically on the follower's ability to estimate the leader's relative state using onboard sensing. Therefore, we need a control framework that relies only on local relative-state information \( \mathbf{x}_{ij} = [L_{ij}, \phi_{ij}, \xi_{ij}, \alpha_{ij}]^\top \) to achieve 3D leader-follower formation tracking while explicitly enforcing camera-frustum visibility constraints (shaded magenta region).
+            When drones fly together indoors or in other GPS-denied places, the follower has to figure out where the leader is using its <strong>onboard camera</strong>. That works fine — until the leader drifts out of view. Once that happens, the follower loses its only source of information about the leader and the formation breaks down.
+          </p>
+          <p>
+            The trouble is that the goals can fight each other. The formation might call for the follower to spread out wide for better coverage, but spreading out can push the leader past the edge of the camera frame. So we need a controller that not only tracks the desired formation but also <strong>keeps the leader inside the camera's view at all times</strong>, using only what the follower can measure locally.
           </p>
         </div>
       </div>
@@ -205,20 +208,113 @@
   </div>
 </section>
 
-<!-- Methodology & Architecture -->
+<!-- Key Contributions -->
+<section class="section" style="padding-top: 0;">
+  <div class="container is-max-desktop">
+    <div class="columns is-centered">
+      <div class="column is-full-width">
+        <h2 class="title is-3 has-text-centered">Key Contributions</h2>
+        <div class="columns is-centered mt-4">
+          <div class="column is-one-third">
+            <div class="box has-text-centered" style="height: 100%;">
+              <span class="icon is-large has-text-info">
+                <i class="fas fa-cube fa-2x"></i>
+              </span>
+              <h4 class="title is-5 mt-3">3D Line-of-Sight Model</h4>
+              <p class="is-size-6">
+                A new way of describing the leader's position relative to the follower's camera using <strong>distance, two angles, and a heading</strong> — a natural fit for what a camera actually sees.
+              </p>
+            </div>
+          </div>
+          <div class="column is-one-third">
+            <div class="box has-text-centered" style="height: 100%;">
+              <span class="icon is-large has-text-info">
+                <i class="fas fa-network-wired fa-2x"></i>
+              </span>
+              <h4 class="title is-5 mt-3">Distributed Controller</h4>
+              <p class="is-size-6">
+                Each follower computes its own commands from <strong>local information only</strong>. No central coordinator needed, so the system scales naturally to more drones.
+              </p>
+            </div>
+          </div>
+          <div class="column is-one-third">
+            <div class="box has-text-centered" style="height: 100%;">
+              <span class="icon is-large has-text-info">
+                <i class="fas fa-shield-alt fa-2x"></i>
+              </span>
+              <h4 class="title is-5 mt-3">Real-Time Safety Filter</h4>
+              <p class="is-size-6">
+                A lightweight CBF-QP filter that <strong>only kicks in when needed</strong>. It nudges the commands just enough to keep the leader visible, then steps back out of the way.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- How It Works -->
 <section class="section">
   <div class="container is-max-desktop">
     <div class="columns is-centered">
       <div class="column is-full-width">
-        <h2 class="title is-3">Perception-Aware Safe 3D Leader-Follower Formation Control</h2>
+        <h2 class="title is-3">How It Works</h2>
         <div class="content has-text-justified">
           <div class="has-text-centered" style="margin-top: 20px; margin-bottom: 20px;">
-            <img src="./static/images/architecture4.png" alt="Perception-Aware Safe LFF Control Architecture" style="max-width: 100%;">
+            <img src="./static/images/architecture4.png" alt="Perception-Aware Safe Leader-Follower Control Architecture" style="max-width: 100%;">
+            <p class="is-size-7 mt-2"><em>The full pipeline: a formation planner picks the desired shape, a nominal controller turns that into velocity commands, a safety filter adjusts those commands to keep the leader visible, and finally a low-level velocity controller flies the drone.</em></p>
           </div>
           <p>
-            We propose a novel relative 3D kinematic formulation in spherical coordinates that captures the camera-to-leader geometry (including relative heading) and yields a distributed 3D-LFF nominal controller based solely on local relative states. We pair this controller with areal-time CBF-QP perception-aware safety filter that enforces the follower camera frustum-FOV and depth limits-by minimally modifying the nominal formation commands, thereby guaranteeing continuous visibility while preserving tracking whenever feasible.  
+            Our approach has three building blocks that work together. The first describes <em>what the follower sees</em>, the second computes <em>how the follower should move</em>, and the third <em>protects visibility</em> when the two collide.
           </p>
         </div>
+
+        <!-- Step 1 -->
+        <div class="box mt-5">
+          <div class="columns is-vcentered">
+            <div class="column is-2 has-text-centered">
+              <span class="tag is-info is-large is-rounded" style="font-size: 1.3rem;">Step 1</span>
+            </div>
+            <div class="column">
+              <h4 class="title is-5">Describe the world from the camera's point of view</h4>
+              <p class="content">
+                Instead of tracking the leader using raw <em>x, y, z</em> coordinates, we describe its position the way a camera naturally sees it: <strong>how far away</strong> it is, <strong>how far left or right</strong> it appears, <strong>how far up or down</strong> it appears, and <strong>which way it's facing</strong>. This makes the camera's field-of-view limits easy to express and easy to enforce later.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Step 2 -->
+        <div class="box">
+          <div class="columns is-vcentered">
+            <div class="column is-2 has-text-centered">
+              <span class="tag is-info is-large is-rounded" style="font-size: 1.3rem;">Step 2</span>
+            </div>
+            <div class="column">
+              <h4 class="title is-5">Compute the nominal formation command</h4>
+              <p class="content">
+                Given a desired formation (e.g., "stay 1.5 m behind and slightly above the leader"), the follower computes the velocity it needs to close the gap between where it is and where it should be. The math gives an <strong>exponentially stable</strong> tracker — meaning the formation error shrinks quickly and predictably whenever the camera isn't being pushed to its limits.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Step 3 -->
+        <div class="box">
+          <div class="columns is-vcentered">
+            <div class="column is-2 has-text-centered">
+              <span class="tag is-info is-large is-rounded" style="font-size: 1.3rem;">Step 3</span>
+            </div>
+            <div class="column">
+              <h4 class="title is-5">Filter the command for safety</h4>
+              <p class="content">
+                Before the velocity command goes to the motors, it passes through a <strong>safety filter</strong> built from Control Barrier Functions. The filter solves a tiny optimization problem at every timestep that asks: <em>"What's the closest command to the one I wanted that still keeps the leader inside the camera frustum?"</em> When the formation is feasible, the filter does nothing. When the formation conflicts with visibility, the filter quietly bends the command just enough to preserve the view — and lets the formation recover as soon as the conflict passes.
+              </p>
+            </div>
+          </div>
+        </div>
+
       </div>
     </div>
   </div>
@@ -229,20 +325,29 @@
   <div class="container is-max-desktop">
     <h2 class="title is-3">Experiments</h2>
     <p class="content">
-      We evaluate our perception-aware 3D leader-follower controller in a Gazebo simulation and on physical Crazyflie 2.1 drones. We compare our Control Barrier Function (CBF) safety filter against a standard baseline without it (NoCBF).
+      We tested our method both in simulation and on real hardware. In every test, two followers fly the same trajectory side by side: one runs our full method (<strong>CBF</strong>), the other uses only the formation controller without the safety filter (<strong>NoCBF</strong>). This lets us see exactly what the safety filter is doing.
     </p>
+
+    <p class="content">
+      To stress-test the safety filter, each scenario follows a <strong>three-stage task</strong>:
+    </p>
+    <ul class="content">
+      <li><strong>Stage 1 — Normal:</strong> the formation is comfortable and the camera has no trouble seeing the leader.</li>
+      <li><strong>Stage 2 — Conflict:</strong> the desired formation widens or shifts, pushing the leader toward the edge of the camera view.</li>
+      <li><strong>Stage 3 — Recovery:</strong> the conflict goes away and the followers should return to the nominal formation smoothly.</li>
+    </ul>
 
     <hr>
     <h3 class="title is-4 has-text-centered">Gazebo Simulation</h3>
     <div class="columns is-centered is-vcentered mt-4">
       <div class="column is-half">
-        <img src="./static/images/scenario.png" alt="Top view of the experiment trajectory" />
-        <!-- <p class="has-text-centered is-size-7 mt-2">1leader-2follower navigation scenario in a Gazebo cave environment.</p> -->
+        <img src="./static/images/scenario.png" alt="Top view of the cave navigation scenario" />
+        <p class="has-text-centered is-size-7 mt-2"><em>One leader (green) and two followers navigating a cave in Gazebo.</em></p>
       </div>
     </div>
 
     <p class="content">
-      Using the <a href="https://www.bitcraze.io/2024/04/crazysim-a-software-in-the-loop-simulator-for-the-crazyflie/" target="_blank" rel="noopener noreferrer">CrazySim</a> framework, the drones navigate a confined cave environment. Open chambers encourage formation expansion (introducing visibility conflicts), while tight corridors force sudden braking maneuvers. 
+      Using the <a href="https://www.bitcraze.io/2024/04/crazysim-a-software-in-the-loop-simulator-for-the-crazyflie/" target="_blank" rel="noopener noreferrer">CrazySim</a> framework, the team flies through a tight cave environment. Open chambers naturally invite the formation to spread out — which is exactly when visibility conflicts arise — while narrow corridors force quick braking maneuvers.
     </p>
 
     <div class="columns is-centered mt-4">
@@ -250,153 +355,112 @@
         <video autoplay controls muted loop playsinline width="100%">
           <source src="./static/videos/Simulation-compressed-low.mp4" type="video/mp4">
         </video>
-        <p class="has-text-centered is-size-7 mt-2">Three-Stage Task</p>
+        <p class="has-text-centered is-size-7 mt-2"><em>Three-Stage Task: formation widens in the open chamber.</em></p>
       </div>
       <div class="column is-half">
         <video autoplay controls muted loop playsinline width="100%">
           <source src="./static/videos/SimulationAggresive-compressed-low.mp4" type="video/mp4">
         </video>
-        <p class="has-text-centered is-size-7 mt-2">Abrupt Leader Motion</p>
+        <p class="has-text-centered is-size-7 mt-2"><em>Abrupt Leader Motion: leader brakes hard in a corridor.</em></p>
       </div>
     </div>
 
     <p class="content mt-4">
-      In the three-stage task, expanding the formation pushes the leader toward the edge of the camera view. Our CBF filter safely intervenes, minimally adjusting the controls to keep the leader strictly visible, whereas the baseline (NoCBF) loses sight of the leader entirely. Similarly, when the leader brakes abruptly, our safety filter prevents dangerous overshoot and maintains safety.
+      In the three-stage task, expanding the formation drags the leader toward the edge of the camera frame. Our safety filter steps in for just long enough to keep the leader inside the view, then steps back out — the baseline without the filter loses sight of the leader entirely. The same thing happens during the sudden braking maneuver: the filter prevents the follower from overshooting and losing track.
     </p>
 
     <hr>
-    <h3 class="title is-4 has-text-centered">Crazyflie Experiment</h3>
+    <h3 class="title is-4 has-text-centered">Crazyflie Hardware Experiment</h3>
 
     <div class="columns is-centered is-vcentered mt-4">
       <div class="column is-half">
-        <img src="./static/images/exp_top.png" alt="Top view of the experiment trajectory" />
-        <!-- <p class="has-text-centered is-size-7 mt-2">Top view trajectories of the leader and the followers.</p> -->
+        <img src="./static/images/exp_top.png" alt="Top view of the hardware experiment trajectory" />
+        <p class="has-text-centered is-size-7 mt-2"><em>Top-down view of the leader and follower trajectories during real flight.</em></p>
       </div>
     </div>
 
     <p class="content mt-4">
-      Real-world flight validation uses Crazyflie 2.1 quadrotors. To rigorously stress-test the method against unmodeled aerodynamics and latency, the leader tracks a highly dynamic figure-eight (lemniscate) trajectory. A motion-capture system is used to emulate ideal relative sensing, allowing us to isolate the performance of the control and safety layers.
+      We then flew the same protocol on real <strong>Crazyflie 2.1</strong> quadrotors. To really push the system, the leader tracks a fast figure-eight (lemniscate) trajectory while rotating its yaw. This adds all the messy real-world effects — aerodynamic drag, communication delay, actuator noise — that simulation can't fully capture. A motion-capture system stands in for the camera so we can isolate the performance of the controller and safety filter.
     </p>
     <div class="columns is-centered is-vcentered mt-4">
       <div class="column is-8">
         <video autoplay controls muted loop playsinline width="100%">
           <source src="./static/videos/Experiment-compressed-low.mp4" type="video/mp4">
         </video>
-        <p class="has-text-centered is-size-7 mt-2">Hardware Flight Video</p>
+        <p class="has-text-centered is-size-7 mt-2"><em>Hardware flight video.</em></p>
       </div>
-      
+
       <div class="column is-4">
         <img src="./static/images/exp_shorten.png" alt="Hardware Experiment Quantitative Results" style="max-width: 100%; margin: 0 auto; display: block;" />
-        <p class="has-text-centered is-size-7 mt-2">Quantitative Results</p>
+        <p class="has-text-centered is-size-7 mt-2"><em>Quantitative results: the CBF follower (blue) stays inside the safe region; the baseline (red) does not.</em></p>
       </div>
     </div>
 
     <p class="content mt-4">
-      In real-world maneuvers, the CBF-equipped follower successfully modifies its nominal velocity commands when formation demands conflict with camera constraints. It maintains strict visibility of the leader at all times. In contrast, the baseline controller violates the safety constraints, proving the effectiveness of the proposed method for real-world deployments.
+      The story holds up on hardware. When the desired formation conflicts with what the camera can see, our follower quietly adjusts its velocity commands and keeps the leader in view the entire time. The baseline follower — same controller, no safety filter — drifts into the unsafe region and loses sight of the leader. As soon as the conflict ends, our follower returns smoothly to its desired formation.
     </p>
 
   </div>
 </section>
 
-<!-- 
+<!-- Takeaways -->
 <section class="section">
   <div class="container is-max-desktop">
-    <h2 class="title is-3">Experiments </h2>
     <div class="columns is-centered">
-      
-      <div class="column">
-        <div class="content">
-          <h3 class="title is-4">Gazebo Simulation</h3>
-          <p>Confined cave scenario with conflicting formation objectives.</p>
-          <div class="carousel-container">
-            <div id="gazebo-video-carousel" class="carousel">
-              <div class="item">
-                <video autoplay controls muted loop playsinline width="100%">
-                  <source src="./static/videos/Simulation-compressed-low.mp4" type="video/mp4">
-                </video>
-                <p class="has-text-centered is-size-7 mt-2">Conflicting Objectives</p>
-              </div>
-              <div class="item">
-                <video autoplay controls muted loop playsinline width="100%">
-                  <source src="./static/videos/Experiment-compressed-low.mp4" type="video/mp4">
-                </video>
-                <p class="has-text-centered is-size-7 mt-2">Abrupt Leader Motion</p>
-              </div>
+      <div class="column is-full-width">
+        <h2 class="title is-3 has-text-centered">Takeaways</h2>
+        <div class="columns is-centered mt-4">
+          <div class="column is-one-third">
+            <div class="box has-text-centered" style="height: 100%;">
+              <span class="icon is-large has-text-success">
+                <i class="fas fa-check-circle fa-2x"></i>
+              </span>
+              <h4 class="title is-6 mt-3">Visibility is guaranteed</h4>
+              <p class="is-size-6">
+                The leader stays inside the camera frustum at every moment, even during aggressive maneuvers.
+              </p>
+            </div>
+          </div>
+          <div class="column is-one-third">
+            <div class="box has-text-centered" style="height: 100%;">
+              <span class="icon is-large has-text-success">
+                <i class="fas fa-bolt fa-2x"></i>
+              </span>
+              <h4 class="title is-6 mt-3">Tracking still works</h4>
+              <p class="is-size-6">
+                When there's no visibility conflict, the safety filter does nothing and the formation tracks normally.
+              </p>
+            </div>
+          </div>
+          <div class="column is-one-third">
+            <div class="box has-text-centered" style="height: 100%;">
+              <span class="icon is-large has-text-success">
+                <i class="fas fa-microchip fa-2x"></i>
+              </span>
+              <h4 class="title is-6 mt-3">Runs in real time</h4>
+              <p class="is-size-6">
+                The safety filter is a small quadratic program that solves fast enough to fly on hardware as light as a Crazyflie.
+              </p>
             </div>
           </div>
         </div>
-      </div>
-
-      <div class="column">
-        <div class="content">
-          <h3 class="title is-4">Hardware Experiment</h3>
-          <p>Real-world flight validation using Crazyflie 2.1 brushless UAVs.</p>
-          <div class="carousel-container">
-            <div id="hardware-video-carousel" class="carousel">
-              <div class="item">
-                <video autoplay controls muted loop playsinline width="100%">
-                  <source src="./static/videos/Experiment-compressed-low.mp4" type="video/mp4">
-                </video>
-                <p class="has-text-centered is-size-7 mt-2">Flight Validation - Test 1</p>
-              </div>
-            </div>
-          </div>
-        </div>
+        <p class="content has-text-centered mt-5" style="max-width: 800px; margin: 0 auto;">
+          <strong>What's next?</strong> In our experiments we used a motion-capture system as a stand-in for the camera so we could isolate the controller and safety filter. The natural next step is to close the loop with a real onboard camera and see how the system handles noisy, image-based measurements.
+        </p>
       </div>
     </div>
   </div>
 </section>
-
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma-carousel@4.0.3/dist/css/bulma-carousel.min.css">
-<script src="https://cdn.jsdelivr.net/npm/bulma-carousel@4.0.3/dist/js/bulma-carousel.min.js"></script>
-
-<section class="section">
-  <div class="container is-max-desktop">
-    <h2 class="title is-3">Quantitative Results</h2>
-    <div class="columns is-centered">
-      
-      <div class="column is-half">
-        <h3 class="title is-4">Gazebo Simulation</h3>
-        <div class="carousel-container">
-          <div id="gazebo-carousel" class="carousel">
-            <div class="item">
-              <img src="./static/images/crazysim_conflicting.png" alt="Gazebo Conflicting" />
-              <p class="has-text-centered is-size-7">Three-Stages Task</p>
-            </div>
-            <div class="item">
-              <img src="./static/images/crazysim_abrupt.png" alt="Gazebo Abrupt" />
-              <p class="has-text-centered is-size-7">Abrupt Leader Motion</p>
-            </div>
-          </div>
-        </div>
-      </div>     
-      <div class="column is-half">
-        <h3 class="title is-4">Hardware Experiment</h3>
-        <div class="carousel-container">
-          <div id="hardware-image-carousel" class="carousel"> 
-            <div class="item">
-              <img src="./static/images/exp_conflict.png" alt="Experiment Conflicting" />
-              <p class="has-text-centered is-size-7">Three-Stages Task</p>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-    
-    <p class="is-size-7 mt-4">
-      <strong>Comparison:</strong> The CBF-equipped follower (blue) maintains states within safe bounds compared to the unconstrained (NoCBF) baseline.
-    </p>
-  </div>
-</section> -->
 
 <section class="section" id="BibTeX">
   <div class="container is-max-desktop content">
     <h2 class="title">BibTeX</h2>
-    <pre><code>@article{park2021nerfies,
-  author    = {Park, Keunhong and Sinha, Utkarsh and Barron, Jonathan T. and Bouaziz, Sofien and Goldman, Dan B and Seitz, Steven M. and Martin-Brualla, Ricardo},
-  title     = {Nerfies: Deformable Neural Radiance Fields},
-  journal   = {ICCV},
-  year      = {2021},
+    <pre><code>@article{santjoko2026perceptionaware3dlff,
+  author  = {Santjoko, Immanuel R. and Suganda, Richie R. and Hu, Bin},
+  title   = {Distributed 3D Leader--Follower Formation Control with
+             Field-of-View Safety via Control Barrier Functions},
+  journal = {Under Review},
+  year    = {2026},
 }</code></pre>
   </div>
 </section>
@@ -412,18 +476,5 @@
 </footer>
 
 
-<script>
-    document.addEventListener('DOMContentLoaded', () => {
-      // Initialize all div with class .carousel
-      const carousels = bulmaCarousel.attach('#gazebo-carousel', {
-        slidesToScroll: 1,
-        slidesToShow: 1,
-        infinite: false,
-        autoplay: false,
-        pagination: true, // You can set this to true if you want dots at the bottom
-      });
-    });
-  </script>
-</body>
 </body>
 </html>
